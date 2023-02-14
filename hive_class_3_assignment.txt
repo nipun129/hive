@@ -1,22 +1,163 @@
 1. Download vechile sales data -> https://github.com/shashank-mishra219/Hive-Class/blob/main/sales_order_data.csv
+abc@ccf66691b1ef:~/workspace/Hive-Class$ dir sales_order_data.csv
+sales_order_data.csv
 
 2. Store raw data into hdfs location
+abc@ccf66691b1ef:~/workspace/Hive-Class$ hadoop fs -put  sales_order_data.csv /tmp
+2023-02-14 23:17:51,223 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+abc@ccf66691b1ef:~/workspace/Hive-Class$ 
+
+abc@ccf66691b1ef:~/workspace/Hive-Class$ hadoop fs -ls /tmp
+Found 2 items
+drwx-wx-wx   - abc supergroup          0 2023-02-14 22:58 /tmp/hive
+-rw-r--r--   1 abc supergroup     360233 2023-02-14 23:17 /tmp/sales_order_data.csv
 
 3. Create a internal hive table "sales_order_csv" which will store csv data sales_order_csv .. make sure to skip header row while creating table
+hive> create database hive_db
+    > ;
+OK
+Time taken: 0.041 seconds
+hive> create table sales_order_data_csv(ORDERNUMBER int, QUANTITYORDERED int, PRICEEACH float, ORDERLINENUMBER int, SALES float, STATUS string, QTR_ID int, MONTH_ID int, YEAR_ID int, PRODUCTLINE string, MSRP int, PRODUCTCODE string, PHONE string, CITY string, STATE string, POSTALCODE string, COUNTRY string, TERRITORY string, CONTACTLASTNAME string, CONTACTFIRSTNAME string, DEALSIZE string ) row format delimited fields terminated by ',' tblproperties("skip.header.line.count"="1") ;
+OK
+Time taken: 0.117 seconds
 
 4. Load data from hdfs path into "sales_order_csv" 
 
+hive> load data inpath '/tmp/sales_order_data.csv' into table sales_order_data_csv;
+Loading data to table default.sales_order_data_csv
+OK
+Time taken: 0.872 seconds
+hive> 
+
 5. Create an internal hive table which will store data in ORC format "sales_order_orc"
+
+    > create table sales_order_orc ( ORDERNUMBER int, QUANTITYORDERED int, PRICEEACH float, ORDERLINENUMBER int, SALES float, STATUS string, QTR_ID int, MONTH_ID int, YEAR_ID int, PRODUCTLINE string, MSRP int, PRODUCTCODE string, PHONE string, CITY string, STATE string, POSTALCODE string, COUNTRY string, TERRITORY string, CONTACTLASTNAME string, CONTACTFIRSTNAME string, DEALSIZE string ) stored as orc;
+OK
+Time taken: 0.082 seconds
+hive> 
 
 6. Load data from "sales_order_csv" into "sales_order_orc"
 
+hive> from sales_order_data_csv insert overwrite table sales_order_orc select *;
+Query ID = abc_20230214233640_9fed4fe3-3a18-4bcb-a150-a0951256500d
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1676395702981_0001, Tracking URL = http://ccf66691b1ef:8088/proxy/application_1676395702981_0001/
+Kill Command = /usr/local/hadoop/bin/mapred job  -kill job_1676395702981_0001
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2023-02-14 23:36:52,861 Stage-1 map = 0%,  reduce = 0%
+2023-02-14 23:37:02,127 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 14.13 sec
+2023-02-14 23:37:07,278 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 16.45 sec
+MapReduce Total cumulative CPU time: 16 seconds 450 msec
+Ended Job = job_1676395702981_0001
+Stage-4 is selected by condition resolver.
+Stage-3 is filtered out by condition resolver.
+Stage-5 is filtered out by condition resolver.
+Moving data to directory hdfs://localhost/user/hive/warehouse/sales_order_orc/.hive-staging_hive_2023-02-14_23-36-40_660_3891557554026866528-1/-ext-10000
+Loading data to table default.sales_order_orc
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 16.45 sec   HDFS Read: 400457 HDFS Write: 50361 SUCCESS
+Total MapReduce CPU Time Spent: 16 seconds 450 msec
+OK
+Time taken: 29.389 seconds
+hive> 
 
 Perform below menioned queries on "sales_order_orc" table :
 
 a. Calculatye total sales per year
+hive> 
+    > SELECT SUM(SALES) FROM sales_order_orc GROUP BY YEAR_ID;
+Query ID = abc_20230214233857_f3c1830d-4ca2-46d5-9937-9caedfdf19cf
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1676395702981_0002, Tracking URL = http://ccf66691b1ef:8088/proxy/application_1676395702981_0002/
+Kill Command = /usr/local/hadoop/bin/mapred job  -kill job_1676395702981_0002
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2023-02-14 23:39:08,593 Stage-1 map = 0%,  reduce = 0%
+2023-02-14 23:39:15,769 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.37 sec
+2023-02-14 23:39:21,906 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 4.69 sec
+MapReduce Total cumulative CPU time: 4 seconds 690 msec
+Ended Job = job_1676395702981_0002
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 4.69 sec   HDFS Read: 44103 HDFS Write: 178 SUCCESS
+Total MapReduce CPU Time Spent: 4 seconds 690 msec
+OK
+3516979.547241211
+4724162.593383789
+1791486.7086791992
+Time taken: 25.611 seconds, Fetched: 3 row(s)
+
 b. Find a product for which maximum orders were placed
+
+hive> SELECT SUM(QUANTITYORDERED),PRODUCTCODE FROM sales_order_orc GROUP BY PRODUCTCODE ORDER BY SUM(QUANTITYORDERED) desc LIMIT 1;
+Query ID = abc_20230214234647_d34ef959-7fd9-42fb-a061-eab0aa8a22c7
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1676395702981_0006, Tracking URL = http://ccf66691b1ef:8088/proxy/application_1676395702981_0006/
+Kill Command = /usr/local/hadoop/bin/mapred job  -kill job_1676395702981_0006
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2023-02-14 23:46:56,950 Stage-1 map = 0%,  reduce = 0%
+2023-02-14 23:47:04,145 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.45 sec
+2023-02-14 23:47:09,267 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 4.77 sec
+MapReduce Total cumulative CPU time: 4 seconds 770 msec
+Ended Job = job_1676395702981_0006
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1676395702981_0007, Tracking URL = http://ccf66691b1ef:8088/proxy/application_1676395702981_0007/
+Kill Command = /usr/local/hadoop/bin/mapred job  -kill job_1676395702981_0007
+Hadoop job information for Stage-2: number of mappers: 1; number of reducers: 1
+2023-02-14 23:47:23,843 Stage-2 map = 0%,  reduce = 0%
+2023-02-14 23:47:31,000 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2023-02-14 23:47:36,116 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 4.31 sec
+MapReduce Total cumulative CPU time: 4 seconds 310 msec
+Ended Job = job_1676395702981_0007
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 4.77 sec   HDFS Read: 36450 HDFS Write: 3269 SUCCESS
+Stage-Stage-2: Map: 1  Reduce: 1   Cumulative CPU: 4.31 sec   HDFS Read: 10815 HDFS Write: 113 SUCCESS
+Total MapReduce CPU Time Spent: 9 seconds 80 msec
+OK
+1774    S18_3232
+Time taken: 51.172 seconds, Fetched: 1 row(s)
+
 c. Calculate the total sales for each quarter
+
+SELECT QTR_ID,SUM(SALES) FROM sales_order_orc GROUP BY QTR_ID ORDER BY QTR_ID;
+
 d. In which quarter sales was minimum
+
+SELECT QTR_ID FROM sales_order_orc GROUP BY QTR_ID ORDER BY SUM(SALES) LIMIT 1;
+
 e. In which country sales was maximum and in which country sales was minimum
+
+
 f. Calculate quartelry sales for each city
+
+
 h. Find a month for each year in which maximum number of quantities were sold
