@@ -95,11 +95,186 @@ Download a data from the given location -
 https://archive.ics.uci.edu/ml/machine-learning-databases/00360/
 
 1. Create a hive table as per given schema in your dataset 
+CREATE TABLE air_quality_csv (Day STRING, Time STRING, CO_GT DECIMAL, PT08S1_CO INT, NMHC_GT INT, C6H6_GT DECIMAL,
+PT08S2_NMHC INT, NOx_GT INT, PT08S3_NOx INT, NO2_GT INT, PT08S4_NO2 INT, PT08S5_O3 INT,T DECIMAL,RH DECIMAL,AH DECIMAL) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ‘;’ tblproperties ("skip.header.line.count" = "1");
+
 2. try to place a data into table location
+LOAD DATA INPATH '/csv' INTO TABLE air_quality;
+
 3. Perform a select operation . 
+hive> SELECT * FROM air_quality_csv LIMIT 10;
+OK
+air_quality_csv.day     air_quality_csv.time    air_quality_csv.co_gt   air_quality_csv.pt08s1_co       air_quality_csv.nmhc_gt air_quality_csv.c6h6_gt 
+air_quality_csv.pt08s2_nmhcair_quality_csv.nox_gt  air_quality_csv.pt08s3_nox      air_quality_csv.no2_gt  air_quality_csv.pt08s4_no2      air_quality_csv.pt08s5_o3       
+air_quality_csv.t       air_quality_csv.rh air_quality_csv.ah
+10/03/2004      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+10/03/2004      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+10/03/2004      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+10/03/2004      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+10/03/2004      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+10/03/2004      23.00.00        12      1197    38      47      750     89      1337    96      1393    949     112     592     7848
+11/03/2004      00.00.00        12      1185    31      36      690     62      1462    77      1333    733     113     568     7603
+11/03/2004      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
+11/03/2004      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
+11/03/2004      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
+
 4. Fetch the result of the select operation in your local as a csv file . 
+hive> INSERT OVERWRITE LOCAL DIRECTORY '/tmp/air_ooutput.csv'
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > SELECT * FROM air_quality_csv;
+    
+cd /tmp
+# ls -lrt
+drwxr-xr-x 2 root root 4096 Feb 18 19:36 93090f58-0805-4abc-b4a8-2e41db9d0194_resources
+drwxr-xr-x 2 root root 4096 Feb 18 21:59 air_ooutput.csv
+
+Now we can copy the file from Hive docker containier using docker copy using source as the path /tmp/air_oooutput.csv on the container
+
 5. Perform group by operation . 
+
+hive> SELECT DAY,SUM(CO_GT) FROM air_quality_csv GROUP BY DAY LIMIT 20;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230218220727_d724204a-fea9-42bc-b1f1-6da79aa51559
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-18 22:07:29,820 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1988486518_0002
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 2957872 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+day     _c1
+01/01/2005      291
+01/02/2005      688
+01/03/2005      245
+01/04/2004      576
+01/04/2005      -1745
+01/05/2004      183
+01/06/2004      -380
+01/07/2004      483
+01/08/2004      218
+01/09/2004      438
+01/10/2004      -714
+01/11/2004      351
+01/12/2004      367
+02/01/2005      491
+02/02/2005      804
+02/03/2005      -1568
+02/04/2004      318
+02/04/2005      205
+02/05/2004      152
+02/06/2004      -4592
+Time taken: 2.291 seconds, Fetched: 20 row(s)
+
 7. Perform filter operation at least 5 kinds of filter examples . 
+
+hive> SELECT DAY,CO_GT FROM air_quality_csv  WHERE CO_GT > 10 LIMIT 20;;
+OK
+day     co_gt
+10/03/2004      26
+10/03/2004      22
+10/03/2004      22
+10/03/2004      16
+10/03/2004      12
+11/03/2004      12
+11/03/2004      11
+11/03/2004      22
+11/03/2004      17
+11/03/2004      15
+11/03/2004      16
+11/03/2004      19
+11/03/2004      29
+11/03/2004      22
+11/03/2004      22
+11/03/2004      29
+11/03/2004      48
+11/03/2004      69
+11/03/2004      61
+11/03/2004      39
+Time taken: 0.25 seconds, Fetched: 20 row(s)
+
+hive> SELECT * FROM air_quality WHERE DAY ='2004-03-10';
+OK
+air_quality.day air_quality.time        air_quality.co_gt       air_quality.pt08s1_co   air_quality.nmhc_gt     air_quality.c6h6_gt     air_quality.pt08s2_nmhc air_quality.nox_gtair_quality.pt08s3_nox   air_quality.no2_gt      air_quality.pt08s4_no2  air_quality.pt08s5_o3   air_quality.t   air_quality.rh  air_quality.ah
+2004-03-10      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+2004-03-10      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+2004-03-10      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+2004-03-10      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+2004-03-10      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+2004-03-10      23.00.00        12      1197    38      47      750     89      1337    96      1393    949     112     592     7848
+Time taken: 0.289 seconds, Fetched: 6 row(s)
+
+hive> SELECT * FROM air_quality WHERE DATE(DAY)>='2004-03-10' AND DATE(DAY)<='2004-03-12';
+OK
+air_quality.day air_quality.time        air_quality.co_gt       air_quality.pt08s1_co   air_quality.nmhc_gt     air_quality.c6h6_gt     air_quality.pt08s2_nmhc air_quality.nox_gtair_quality.pt08s3_nox   air_quality.no2_gt      air_quality.pt08s4_no2  air_quality.pt08s5_o3   air_quality.t   air_quality.rh  air_quality.ah
+2004-03-10      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+2004-03-10      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+2004-03-10      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+2004-03-10      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+2004-03-10      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+2004-03-10      23.00.00        12      1197    38      47      750     89      1337    96      1393    949     112     592     7848
+2004-03-11      00.00.00        12      1185    31      36      690     62      1462    77      1333    733     113     568     7603
+2004-03-11      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
+2004-03-11      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
+2004-03-11      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
+2004-03-11      04.00.00        -200    1011    14      13      527     21      1818    34      1197    445     101     605     7465
+2004-03-11      05.00.00        7       1066    8       11      512     16      1918    28      1182    422     110     562     7366
+
+hive> SELECT DAY,PT08S2_NMHC FROM air_quality_csv WHERE PT08S2_NMHC%2=0 LIMIT 50;
+OK
+day     pt08s2_nmhc
+10/03/2004      1046
+10/03/2004      948
+10/03/2004      836
+10/03/2004      750
+11/03/2004      690
+11/03/2004      672
+11/03/2004      512
+11/03/2004      900
+11/03/2004      960
+11/03/2004      762
+11/03/2004      774
+11/03/2004      1034
+11/03/2004      912
+11/03/2004      1020
+11/03/2004      1488
+11/03/2004      1404
+11/03/2004      1076
+12/03/2004      718
+12/03/2004      574
+12/03/2004      506
+12/03/2004      730
+12/03/2004      1236
+12/03/2004      1118
+12/03/2004      986
+
+hive> SELECT * FROM air_quality WHERE pt08s1_co < 0 LIMIT 20;
+OK
+air_quality.day air_quality.time        air_quality.co_gt       air_quality.pt08s1_co   air_quality.nmhc_gt     air_quality.c6h6_gt     air_quality.pt08s2_nmhc air_quality.nox_gtair_quality.pt08s3_nox   air_quality.no2_gt      air_quality.pt08s4_no2  air_quality.pt08s5_o3   air_quality.t   air_quality.rh  air_quality.ah
+2004-04-01      14.00.00        17      -200    222     -2000   -200    99      -200    72      -200    -200    -200    -200    -200
+2004-04-01      15.00.00        19      -200    197     -2000   -200    108     -200    81      -200    -200    -200    -200    -200
+2004-04-01      16.00.00        23      -200    319     -2000   -200    131     -200    93      -200    -200    -200    -200    -200
+2004-04-08      23.00.00        2       -200    137     -2000   -200    129     -200    106     -200    -200    -200    -200    -200
+2004-04-09      00.00.00        24      -200    189     -2000   -200    154     -200    109     -200    -200    -200    -200    -200
+2004-04-09      01.00.00        18      -200    159     -2000   -200    118     -200    97      -200    -200    -200    -200    -200
+2004-04-09      02.00.00        1       -200    80      -2000   -200    69      -200    83      -200    -200    -200    -200    -200
+2004-04-09      03.00.00        1       -200    66      -2000   -200    -200    -200    -200    -200    -200    -200    -200    -200
+2004-04-09      04.00.00        1       -200    87      -2000   -200    97      -200    79      -200    -200    -200    -200    -200
+2004-04-09      05.00.00        9       -200    79      -2000   -200    145     -200    84      -200    -200    -200    -200    -200
+2004-04-09      06.00.00        15      -200    150     -2000   -200    169     -200    86      -200    -200    -200    -200    -200
+2004-04-09      07.00.00        26      -200    196     -2000   -200    250     -200    111     -200    -200    -200    -200    -200
+2004-04-09      08.00.00        29      -200    299     -2000   -200    215     -200    117     -200    -200    -200    -200    -200
+
 8. show and example of regex operation
 9. alter table operation 
 10 . drop table operation
