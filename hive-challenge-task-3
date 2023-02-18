@@ -276,17 +276,196 @@ air_quality.day air_quality.time        air_quality.co_gt       air_quality.pt08
 2004-04-09      08.00.00        29      -200    299     -2000   -200    215     -200    117     -200    -200    -200    -200    -200
 
 8. show and example of regex operation
+
+
+
 9. alter table operation 
+
+hive> ALTER TABLE air_quality RENAME TO air_quality_data;
+OK
+Time taken: 0.315 seconds
+
 10 . drop table operation
+
+
+
 12 . order by operation . 
+hive> SELECT * FROM air_quality_data ORDER BY DAY LIMIT 50;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230218223630_146f65ee-66ea-4954-b819-23982b8c1543
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-18 22:36:32,661 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local869025352_0005
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 21873416 HDFS Write: 1410124 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+air_quality_data.day    air_quality_data.time   air_quality_data.co_gt  air_quality_data.pt08s1_co      air_quality_data.nmhc_gt        air_quality_data.c6h6_gt        air_quality_data.pt08s2_nmhc       air_quality_data.nox_gt air_quality_data.pt08s3_nox     air_quality_data.no2_gt air_quality_data.pt08s4_no2     air_quality_data.pt08s5_o3      air_quality_data.t air_quality_data.rh     air_quality_data.ah
+2004-03-10      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+2004-03-10      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+2004-03-10      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+2004-03-10      23.00.00        12      1197    38      47      750     89      1337    96      1393    949     112     592     7848
+2004-03-10      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+2004-03-10      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+2004-03-11      09.00.00        22      1351    87      95      960     129     1079    101     1583    1028    105     606     7691
+2004-03-11      05.00.00        7       1066    8       11      512     16      1918    28      1182    422     110     562     7366
+2004-03-11      04.00.00        -200    1011    14      13      527     21      1818    34      1197    445     101     605     7465
+2004-03-11      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
+2004-03-11      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
+2004-03-11      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
+2004-03-11      08.00.00        2       1333    64      80      900     174     1136    112     1517    1102    108     574     7408
+2004-03-11      23.00.00        1       913     26      26      629     47      1565    53      1252    552     82      608     6657
+2004-03-11      22.00.00        15      965     61      47      749     94      1325    85      1333    821     82      634     6905
+2004-03-11      21.00.00        39      1313    197     128     1076    240     957     136     1707    1285    91      640     7419
+
 13 . where clause operations you have to perform . 
+
+hive> SELECT * FROM air_quality WHERE DATE(DAY)>='2004-03-10' AND DATE(DAY)<='2004-03-12';
+OK
+air_quality.day air_quality.time        air_quality.co_gt       air_quality.pt08s1_co   air_quality.nmhc_gt     air_quality.c6h6_gt     air_quality.pt08s2_nmhc air_quality.nox_gtair_quality.pt08s3_nox   air_quality.no2_gt      air_quality.pt08s4_no2  air_quality.pt08s5_o3   air_quality.t   air_quality.rh  air_quality.ah
+2004-03-10      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+2004-03-10      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+2004-03-10      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+2004-03-10      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+2004-03-10      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+2004-03-10      23.00.00        12      1197    38      47      750     89      1337    96      1393    949     112     592     7848
+2004-03-11      00.00.00        12      1185    31      36      690     62      1462    77      1333    733     113     568     7603
+2004-03-11      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
+2004-03-11      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
+2004-03-11      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
+2004-03-11      04.00.00        -200    1011    14      13      527     21      1818    34      1197    445     101     605     7465
+2004-03-11      05.00.00        7       1066    8       11      512     16      1918    28      1182    422     110     562     7366
+
 14 . sorting operation you have to perform . 
+hive> SELECT * FROM air_quality_data SORT BY DAY LIMIT 50;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230218223746_ed6a6db1-ec64-4463-9a6c-28855122229d
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-18 22:37:51,048 Stage-1 map = 100%,  reduce = 0%
+2023-02-18 22:37:52,059 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local764235196_0006
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-18 22:37:54,799 Stage-2 map = 100%,  reduce = 100%
+Ended Job = job_local437179382_0007
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 23283378 HDFS Write: 1410124 SUCCESS
+Stage-Stage-2:  HDFS Read: 23283378 HDFS Write: 1410124 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+air_quality_data.day    air_quality_data.time   air_quality_data.co_gt  air_quality_data.pt08s1_co      air_quality_data.nmhc_gt        air_quality_data.c6h6_gt        air_quality_data.pt08s2_nmhc       air_quality_data.nox_gt air_quality_data.pt08s3_nox     air_quality_data.no2_gt air_quality_data.pt08s4_no2     air_quality_data.pt08s5_o3      air_quality_data.t air_quality_data.rh     air_quality_data.ah
+2004-03-10      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+2004-03-10      23.00.00        12      1197    38      47      750     89      1337    96      1393    949     112     592     7848
+2004-03-10      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+2004-03-10      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+2004-03-10      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+2004-03-10      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+2004-03-11      21.00.00        39      1313    197     128     1076    240     957     136     1707    1285    91      640     7419
+2004-03-11      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
+2004-03-11      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
+2004-03-11      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
+
 15 . distinct operation you have to perform . 
+
+hive> SELECT DISTINCT DAY FROM air_quality_data LIMIT 50;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230218223847_9382b38b-a6e0-4d1a-b1f4-178c503fa430
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-18 22:38:49,112 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local693906642_0009
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 26103302 HDFS Write: 1410124 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+day
+2004-03-10
+2004-03-11
+2004-03-12
+2004-03-13
+2004-03-14
+2004-03-15
+2004-03-16
+2004-03-17
+2004-03-18
+2004-03-19
+2004-03-20
+2004-03-21
+2004-03-22
+2004-03-23
+2004-03-24
+2004-03-25
+2004-03-26
+
 16 . like an operation you have to perform . 
+
+
+
 17 . union operation you have to perform . 
+
+hive> SELECT * FROM air_quality_data WHERE DATE(DAY)>='2004-03-10'
+    > UNION
+    > SELECT * FROM air_quality_data WHERE DATE(DAY)<='2004-03-12' LIMIT 20;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230218224450_0b468014-0fad-4d20-816b-f97f4bc4dda4
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-18 22:44:52,574 Stage-1 map = 0%,  reduce = 0%
+2023-02-18 22:44:53,586 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local971411992_0012
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 30333188 HDFS Write: 1410124 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+_u2.day _u2.time        _u2.co_gt       _u2.pt08s1_co   _u2.nmhc_gt     _u2.c6h6_gt     _u2.pt08s2_nmhc _u2.nox_gt      _u2.pt08s3_nox  _u2.no2_gt      _u2.pt08s4_no2  _u2.pt08s5_o3      _u2.t   _u2.rh  _u2.ah
+2004-03-10      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+2004-03-10      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+2004-03-10      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+2004-03-10      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+2004-03-10      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+
 18 . table view operation you have to perform . 
-
-
 
 
 
