@@ -5,22 +5,81 @@ Download Dataset 1 - https://drive.google.com/file/d/1WrG-9qv6atP-W3P_-gYln1hHyF
 Download Dataset 2 - https://drive.google.com/file/d/1-JIPCZ34dyN6k9CqJa-Y8yxIGq6vTVXU/view
 
 Note: both files are csv files. 
-
-
+=======================================================================================================================================================================
 1. Create a schema based on the given dataset
+
+#agent_login_report 
+
+hive> CREATE TABLE agent_login_report (S_no INT, Agent STRING, Day STRING,Login STRING,Logout STRING,Duration STRING) 
+    > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' tblproperties ("skip.header.line.count" = "1");
+OK
+Time taken: 0.229 seconds
+
+# agent_performance
+hive> 
+    > 
+    > CREATE TABLE agent_performance (S_no INT, Day STRING, Agent STRING, Chats INT, response_time STRING, res_time STRING, avg_rating DECIMAL, feedbacks INT) 
+    > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' tblproperties ("skip.header.line.count" = "1");
+OK
+Time taken: 0.224 seconds
+=======================================================================================================================================================================
 2. Dump the data inside the hdfs in the given schema location.
+#agent_login_report 
+hive> LOAD DATA INPATH '/csv/AgentLogingReport.csv' INTO TABLE agent_login_report;
+Loading data to table hive_db.agent_login_report
+OK
+Time taken: 1.461 seconds
+hive> SELECT * FROM agent_login_report LIMIT 5 ;
+OK
+agent_login_report.s_no agent_login_report.agent        agent_login_report.day  agent_login_report.login        agent_login_report.logout       agent_login_report.duration
+1       Shivananda Sonwane      30-Jul-22       15:35:29        17:39:39        02:04:10
+2       Khushboo Priya  30-Jul-22       15:06:59        15:07:16        00:00:17
+3       Nandani Gupta   30-Jul-22       15:04:24        17:31:07        02:26:42
+4       Hrisikesh Neogi 30-Jul-22       14:34:29        15:19:35        00:45:06
+5       Mukesh  30-Jul-22       14:03:15        15:11:52        01:08:36
+Time taken: 0.356 seconds, Fetched: 5 row(s)
+
+# agent_performance
+hive> LOAD DATA INPATH '/csv/AgentPerformance.csv' OVERWRITE INTO TABLE agent_performance;
+Loading data to table hive_db.agent_performance
+OK
+Time taken: 0.952 seconds
+hive> SELECT * FROM agent_performance LIMIT 5 ;
+OK
+agent_performance.s_no  agent_performance.day   agent_performance.agent agent_performance.chats agent_performance.response_time agent_performance.res_time      agent_performance.avg_rating       agent_performance.feedbacks
+1       7/30/2022       Prerna Singh    11      0:00:38 0:04:20 4.11    9
+2       7/30/2022       Nandani Gupta   11      0:01:15 0:28:25 3.14    7
+3       7/30/2022       Ameya Jain      14      0:00:30 0:11:36 4.55    11
+4       7/30/2022       Mahesh Sarade   14      0:01:04 0:15:46 4.71    7
+5       7/30/2022       Swati   14      0:01:11 0:16:33 3.67    6
+Time taken: 0.441 seconds, Fetched: 5 row(s)
+=======================================================================================================================================================================
 3. List of all agents' names. 
+=======================================================================================================================================================================
 4. Find out agent average rating.
+=======================================================================================================================================================================
 5. Total working days for each agents 
+=======================================================================================================================================================================
 6. Total query that each agent have taken 
+=======================================================================================================================================================================
 7. Total Feedback that each agent have received 
+=======================================================================================================================================================================
 8. Agent name who have average rating between 3.5 to 4 
+=======================================================================================================================================================================
 9. Agent name who have rating less than 3.5 
+=======================================================================================================================================================================
 10. Agent name who have rating more than 4.5 
+=======================================================================================================================================================================
 11. How many feedback agents have received more than 4.5 average
+=======================================================================================================================================================================
 12. average weekly response time for each agent 
+=======================================================================================================================================================================
 13. average weekly resolution time for each agents 
+=======================================================================================================================================================================
 14. Find the number of chat on which they have received a feedback 
+=======================================================================================================================================================================
 15. Total contribution hour for each and every agents weekly basis 
+=======================================================================================================================================================================
 16. Perform inner join, left join and right join based on the agent column and after joining the table export that data into your local system.
+=======================================================================================================================================================================
 17. Perform partitioning on top of the agent column and then on top of that perform bucketing for each partitioning.
