@@ -93,15 +93,15 @@ BUILD A DATA PIPELINE WITH HIVE
 
 Download a data from the given location - 
 https://archive.ics.uci.edu/ml/machine-learning-databases/00360/
-
+=======================================================================================================================================================================
 1. Create a hive table as per given schema in your dataset 
 CREATE TABLE air_quality_csv (Day STRING, Time STRING, CO_GT DECIMAL, PT08S1_CO INT, NMHC_GT INT, C6H6_GT DECIMAL,
 PT08S2_NMHC INT, NOx_GT INT, PT08S3_NOx INT, NO2_GT INT, PT08S4_NO2 INT, PT08S5_O3 INT,T DECIMAL,RH DECIMAL,AH DECIMAL) 
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ‘;’ tblproperties ("skip.header.line.count" = "1");
-
+=======================================================================================================================================================================
 2. try to place a data into table location
-LOAD DATA INPATH '/csv' INTO TABLE air_quality;
-
+LOAD DATA INPATH '/csv' INTO TABLE air_quality_csv;
+=======================================================================================================================================================================
 3. Perform a select operation . 
 hive> SELECT * FROM air_quality_csv LIMIT 10;
 OK
@@ -118,7 +118,7 @@ air_quality_csv.t       air_quality_csv.rh air_quality_csv.ah
 11/03/2004      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
 11/03/2004      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
 11/03/2004      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
-
+=======================================================================================================================================================================
 4. Fetch the result of the select operation in your local as a csv file . 
 hive> INSERT OVERWRITE LOCAL DIRECTORY '/tmp/air_ooutput.csv'
     > ROW FORMAT DELIMITED
@@ -131,7 +131,7 @@ drwxr-xr-x 2 root root 4096 Feb 18 19:36 93090f58-0805-4abc-b4a8-2e41db9d0194_re
 drwxr-xr-x 2 root root 4096 Feb 18 21:59 air_ooutput.csv
 
 Now we can copy the file from Hive docker containier using docker copy using source as the path /tmp/air_oooutput.csv on the container
-
+=======================================================================================================================================================================
 5. Perform group by operation . 
 
 hive> SELECT DAY,SUM(CO_GT) FROM air_quality_csv GROUP BY DAY LIMIT 20;
@@ -175,7 +175,7 @@ day     _c1
 02/05/2004      152
 02/06/2004      -4592
 Time taken: 2.291 seconds, Fetched: 20 row(s)
-
+=======================================================================================================================================================================
 7. Perform filter operation at least 5 kinds of filter examples . 
 
 hive> SELECT DAY,CO_GT FROM air_quality_csv  WHERE CO_GT > 10 LIMIT 20;;
@@ -274,21 +274,24 @@ air_quality.day air_quality.time        air_quality.co_gt       air_quality.pt08
 2004-04-09      06.00.00        15      -200    150     -2000   -200    169     -200    86      -200    -200    -200    -200    -200
 2004-04-09      07.00.00        26      -200    196     -2000   -200    250     -200    111     -200    -200    -200    -200    -200
 2004-04-09      08.00.00        29      -200    299     -2000   -200    215     -200    117     -200    -200    -200    -200    -200
-
+=======================================================================================================================================================================
 8. show and example of regex operation
+SELECT Day FROM air_quality_csv WHERE Time RLIKE '^[0-9]';
 
-
-
+=======================================================================================================================================================================
 9. alter table operation 
 
 hive> ALTER TABLE air_quality RENAME TO air_quality_data;
 OK
 Time taken: 0.315 seconds
-
+=======================================================================================================================================================================
 10 . drop table operation
+hive> DROP TABLE air_quality_csv;
+OK
+Time taken: 5.718 seconds
+hive>
 
-
-
+=======================================================================================================================================================================
 12 . order by operation . 
 hive> SELECT * FROM air_quality_data ORDER BY DAY LIMIT 50;
 WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
@@ -326,7 +329,7 @@ air_quality_data.day    air_quality_data.time   air_quality_data.co_gt  air_qual
 2004-03-11      23.00.00        1       913     26      26      629     47      1565    53      1252    552     82      608     6657
 2004-03-11      22.00.00        15      965     61      47      749     94      1325    85      1333    821     82      634     6905
 2004-03-11      21.00.00        39      1313    197     128     1076    240     957     136     1707    1285    91      640     7419
-
+=======================================================================================================================================================================
 13 . where clause operations you have to perform . 
 
 hive> SELECT * FROM air_quality WHERE DATE(DAY)>='2004-03-10' AND DATE(DAY)<='2004-03-12';
@@ -344,7 +347,7 @@ air_quality.day air_quality.time        air_quality.co_gt       air_quality.pt08
 2004-03-11      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
 2004-03-11      04.00.00        -200    1011    14      13      527     21      1818    34      1197    445     101     605     7465
 2004-03-11      05.00.00        7       1066    8       11      512     16      1918    28      1182    422     110     562     7366
-
+=======================================================================================================================================================================
 14 . sorting operation you have to perform . 
 hive> SELECT * FROM air_quality_data SORT BY DAY LIMIT 50;
 WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
@@ -389,7 +392,7 @@ air_quality_data.day    air_quality_data.time   air_quality_data.co_gt  air_qual
 2004-03-11      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
 2004-03-11      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
 2004-03-11      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
-
+=======================================================================================================================================================================
 15 . distinct operation you have to perform . 
 
 hive> SELECT DISTINCT DAY FROM air_quality_data LIMIT 50;
@@ -429,11 +432,34 @@ day
 2004-03-24
 2004-03-25
 2004-03-26
-
+=======================================================================================================================================================================
 16 . like an operation you have to perform . 
+hive> SELECT * FROM air_quality_csv WHERE Day LIKE '%2004' LIMIT 20;
+OK
+air_quality_csv.day     air_quality_csv.time    air_quality_csv.co_gt   air_quality_csv.pt08s1_co       air_quality_csv.nmhc_gt air_quality_csv.c6h6_gt air_quality_csv.pt08s2_nmhcair_quality_csv.nox_gt  air_quality_csv.pt08s3_nox      air_quality_csv.no2_gt  air_quality_csv.pt08s4_no2      air_quality_csv.pt08s5_o3       air_quality_csv.t       air_quality_csv.rh air_quality_csv.ah
+10/03/2004      18.00.00        26      1360    150     119     1046    166     1056    113     1692    1268    136     489     7578
+10/03/2004      19.00.00        2       1292    112     94      955     103     1174    92      1559    972     133     477     7255
+10/03/2004      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
+10/03/2004      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
+10/03/2004      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
+10/03/2004      23.00.00        12      1197    38      47      750     89      1337    96      1393    949     112     592     7848
+11/03/2004      00.00.00        12      1185    31      36      690     62      1462    77      1333    733     113     568     7603
+11/03/2004      01.00.00        1       1136    31      33      672     62      1453    76      1333    730     107     600     7702
+11/03/2004      02.00.00        9       1094    24      23      609     45      1579    60      1276    620     107     597     7648
+11/03/2004      03.00.00        6       1010    19      17      561     -200    1705    -200    1235    501     103     602     7517
+11/03/2004      04.00.00        -200    1011    14      13      527     21      1818    34      1197    445     101     605     7465
+11/03/2004      05.00.00        7       1066    8       11      512     16      1918    28      1182    422     110     562     7366
+11/03/2004      06.00.00        7       1052    16      16      553     34      1738    48      1221    472     105     581     7353
+11/03/2004      07.00.00        11      1144    29      32      667     98      1490    82      1339    730     102     596     7417
+11/03/2004      08.00.00        2       1333    64      80      900     174     1136    112     1517    1102    108     574     7408
+11/03/2004      09.00.00        22      1351    87      95      960     129     1079    101     1583    1028    105     606     7691
+11/03/2004      10.00.00        17      1233    77      63      827     112     1218    98      1446    860     108     584     7552
+11/03/2004      11.00.00        15      1179    43      50      762     95      1328    92      1362    671     105     579     7352
+11/03/2004      12.00.00        16      1236    61      52      774     104     1301    95      1401    664     95      668     7951
+11/03/2004      13.00.00        19      1286    63      73      869     146     1162    112     1537    799     83      764     8393
+Time taken: 0.303 seconds, Fetched: 20 row(s)
 
-
-
+=======================================================================================================================================================================
 17 . union operation you have to perform . 
 
 hive> SELECT * FROM air_quality_data WHERE DATE(DAY)>='2004-03-10'
@@ -464,12 +490,17 @@ _u2.day _u2.time        _u2.co_gt       _u2.pt08s1_co   _u2.nmhc_gt     _u2.c6h6
 2004-03-10      20.00.00        22      1402    88      90      939     131     1140    114     1555    1074    119     540     7502
 2004-03-10      21.00.00        22      1376    80      92      948     172     1092    122     1584    1203    110     600     7867
 2004-03-10      22.00.00        16      1272    51      65      836     131     1205    116     1490    1110    112     596     7888
-
+=======================================================================================================================================================================
 18 . table view operation you have to perform . 
 
+hive> SHOW TABLES
+    > ;
+OK
+tab_name
+air_quality_csv
+Time taken: 0.072 seconds, Fetched: 1 row(s)
 
-
-
+=======================================================================================================================================================================
 hive operation with python
 
 Create a python application that connects to the Hive database for extracting data, creating sub tables for data processing, drops temporary tables.fetch rows to 
