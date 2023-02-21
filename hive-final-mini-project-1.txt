@@ -8,77 +8,788 @@ Note: both files are csv files.
 =======================================================================================================================================================================
 1. Create a schema based on the given dataset
 
-#agent_login_report 
-
+# agent_login_report 
 hive> CREATE TABLE agent_login_report (S_no INT, Agent STRING, Day STRING,Login STRING,Logout STRING,Duration STRING) 
-    > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' tblproperties ("skip.header.line.count" = "1");
+    > ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' tblproperties ("skip.header.line.count" = "1");
 OK
-Time taken: 0.229 seconds
+Time taken: 0.161 seconds
 
 # agent_performance
-hive> 
-    > 
-    > CREATE TABLE agent_performance (S_no INT, Day STRING, Agent STRING, Chats INT, response_time STRING, res_time STRING, avg_rating DECIMAL, feedbacks INT) 
-    > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' tblproperties ("skip.header.line.count" = "1");
+hive> CREATE TABLE agent_performance (S_no INT, Day STRING, Agent STRING, Chats INT, response_time STRING, res_time STRING, avg_rating DECIMAL, feedbacks INT) 
+    > ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' tblproperties ("skip.header.line.count" = "1");
 OK
-Time taken: 0.224 seconds
+Time taken: 0.152 seconds
+
 =======================================================================================================================================================================
 2. Dump the data inside the hdfs in the given schema location.
-#agent_login_report 
+# agent_login_report 
 hive> LOAD DATA INPATH '/csv/AgentLogingReport.csv' INTO TABLE agent_login_report;
 Loading data to table hive_db.agent_login_report
 OK
-Time taken: 1.461 seconds
-hive> SELECT * FROM agent_login_report LIMIT 5 ;
-OK
-agent_login_report.s_no agent_login_report.agent        agent_login_report.day  agent_login_report.login        agent_login_report.logout       agent_login_report.duration
-1       Shivananda Sonwane      30-Jul-22       15:35:29        17:39:39        02:04:10
-2       Khushboo Priya  30-Jul-22       15:06:59        15:07:16        00:00:17
-3       Nandani Gupta   30-Jul-22       15:04:24        17:31:07        02:26:42
-4       Hrisikesh Neogi 30-Jul-22       14:34:29        15:19:35        00:45:06
-5       Mukesh  30-Jul-22       14:03:15        15:11:52        01:08:36
-Time taken: 0.356 seconds, Fetched: 5 row(s)
+Time taken: 0.824 seconds
 
 # agent_performance
 hive> LOAD DATA INPATH '/csv/AgentPerformance.csv' OVERWRITE INTO TABLE agent_performance;
 Loading data to table hive_db.agent_performance
 OK
-Time taken: 0.952 seconds
-hive> SELECT * FROM agent_performance LIMIT 5 ;
-OK
-agent_performance.s_no  agent_performance.day   agent_performance.agent agent_performance.chats agent_performance.response_time agent_performance.res_time      agent_performance.avg_rating       agent_performance.feedbacks
-1       7/30/2022       Prerna Singh    11      0:00:38 0:04:20 4.11    9
-2       7/30/2022       Nandani Gupta   11      0:01:15 0:28:25 3.14    7
-3       7/30/2022       Ameya Jain      14      0:00:30 0:11:36 4.55    11
-4       7/30/2022       Mahesh Sarade   14      0:01:04 0:15:46 4.71    7
-5       7/30/2022       Swati   14      0:01:11 0:16:33 3.67    6
-Time taken: 0.441 seconds, Fetched: 5 row(s)
+Time taken: 0.972 seconds
 =======================================================================================================================================================================
 3. List of all agents' names. 
+hive> SELECT DISTINCT Agent FROM agent_performance;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221190759_076c1805-7df7-4cce-af5f-0e563e2f0381
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:08:01,703 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1389944342_0005
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 6405968 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent
+Abhishek 
+Aditya 
+Aditya Shinde
+Aditya_iot 
+Amersh 
+Ameya Jain
+Anirudh 
+Ankit Sharma
+Ankitjha 
+Anurag Tiwari
+Aravind 
+Ashad Nasim
+Ashish 
+Ayushi Mishra
+Bharath 
+Boktiar Ahmed Bappy
+Chaitra K Hiremath
+Deepranjan Gupta
+Dibyanshu 
+Harikrishnan Shaji
+Hitesh Choudhary
+Hrisikesh Neogi
+Hyder Abbas
+Ineuron Intelligence 
+Ishawant Kumar
+Jawala Prakash
+Jayant Kumar
+Jaydeep Dixit
+Khushboo Priya
+Madhulika G
+Mahak 
+Mahesh Sarade
+Maitry 
+Maneesh 
+Manjunatha A
+Mithun S
+Mukesh 
+Mukesh Rao 
+Muskan Garg
+Nandani Gupta
+Nishtha Jain
+Nitin M
+Prabir Kumar Satapathy
+Prateek _iot 
+Prerna Singh
+Rishav Dash
+Rohan 
+Saif Khan
+Saikumarreddy N
+Samprit 
+Sandipan Saha
+Sanjeev Kumar
+Sanjeevan 
+Saurabh Shukla
+Shiva Srivastava
+Shivan K
+Shivan_S 
+Shivananda Sonwane
+Shubham Sharma
+Sowmiya Sivakumar
+Spuri 
+Sudhanshu Kumar
+Suraj S Bilgi
+Swati 
+Tarun 
+Uday Mishra
+Vasanth P
+Vivek 
+Wasim 
+Zeeshan 
+Time taken: 1.866 seconds, Fetched: 70 row(s)
+
 =======================================================================================================================================================================
 4. Find out agent average rating.
+hive> SELECT Agent,AVG(avg_rating) AS agent_avg_rating  FROM agent_performance GROUP BY Agent;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221191031_99ca8b49-37ba-4691-a743-789b0392bba6
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:10:33,397 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1981465697_0006
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 6625674 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent   agent_avg_rating
+Abhishek        0.0000
+Aditya  0.0000
+Aditya Shinde   1.8333
+Aditya_iot      2.3667
+Amersh  0.0000
+Ameya Jain      2.2667
+Anirudh         0.6333
+Ankit Sharma    0.0000
+Ankitjha        0.2667
+Anurag Tiwari   0.2000
+Aravind         2.2667
+Ashad Nasim     0.1667
+Ashish  0.0000
+Ayushi Mishra   3.4333
+Bharath         3.1000
+Boktiar Ahmed Bappy     3.6333
+Chaitra K Hiremath      0.8333
+Deepranjan Gupta        2.9000
+Dibyanshu       0.0000
+Harikrishnan Shaji      2.6667
+Hitesh Choudhary        0.0000
+Hrisikesh Neogi 3.1667
+Hyder Abbas     0.0000
+Ineuron Intelligence    0.0000
+Ishawant Kumar  3.6000
+Jawala Prakash  3.4333
+Jayant Kumar    1.0333
+Jaydeep Dixit   3.2333
+Khushboo Priya  3.8000
+Madhulika G     3.5000
+Mahak   0.1000
+Mahesh Sarade   2.4667
+Maitry  2.9000
+Maneesh         0.1667
+Manjunatha A    3.6333
+Mithun S        2.3667
+Mukesh  0.3333
+Mukesh Rao      0.2667
+Muskan Garg     0.7333
+Nandani Gupta   2.9667
+Nishtha Jain    3.3000
+Nitin M 0.0000
+Prabir Kumar Satapathy  2.4667
+Prateek _iot    2.4333
+Prerna Singh    3.2667
+Rishav Dash     1.4000
+Rohan   0.0000
+Saif Khan       0.0000
+Saikumarreddy N 2.0000
+Samprit         0.0000
+Sandipan Saha   0.4333
+Sanjeev Kumar   3.4667
+Sanjeevan       0.0000
+Saurabh Shukla  0.5667
+Shiva Srivastava        0.9667
+Shivan K        2.8667
+Shivan_S        0.1333
+Shivananda Sonwane      4.2667
+Shubham Sharma  3.2000
+Sowmiya Sivakumar       1.2000
+Spuri   0.0000
+Sudhanshu Kumar 0.3333
+Suraj S Bilgi   0.3000
+Swati   2.5000
+Tarun   0.0667
+Uday Mishra     0.0000
+Vasanth P       0.0000
+Vivek   0.4667
+Wasim   2.4667
+Zeeshan         2.2333
+Time taken: 1.861 seconds, Fetched: 70 row(s)
 =======================================================================================================================================================================
 5. Total working days for each agents 
+hive> SELECT Agent,COUNT(CASE WHEN Chats!=0 THEN Day END) AS working_days FROM agent_performance GROUP BY Agent;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221192008_04a5de59-bb60-4216-84aa-a03d5a913cef
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:20:09,813 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1387733641_0009
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 7284792 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent   working_days
+Abhishek        0
+Aditya  0
+Aditya Shinde   12
+Aditya_iot      17
+Amersh  0
+Ameya Jain      15
+Anirudh         7
+Ankit Sharma    0
+Ankitjha        3
+Anurag Tiwari   2
+Aravind         14
+Ashad Nasim     2
+Ashish  0
+Ayushi Mishra   24
+Bharath         19
+Boktiar Ahmed Bappy     26
+Chaitra K Hiremath      6
+Deepranjan Gupta        21
+Dibyanshu       1
+Harikrishnan Shaji      19
+Hitesh Choudhary        1
+Hrisikesh Neogi 21
+Hyder Abbas     0
+Ineuron Intelligence    0
+Ishawant Kumar  24
+Jawala Prakash  25
+Jayant Kumar    8
+Jaydeep Dixit   21
+Khushboo Priya  26
+Madhulika G     24
+Mahak   1
+Mahesh Sarade   18
+Maitry  20
+Maneesh         3
+Manjunatha A    25
+Mithun S        18
+Mukesh  2
+Mukesh Rao      3
+Muskan Garg     5
+Nandani Gupta   21
+Nishtha Jain    23
+Nitin M 0
+Prabir Kumar Satapathy  17
+Prateek _iot    17
+Prerna Singh    22
+Rishav Dash     21
+Rohan   0
+Saif Khan       0
+Saikumarreddy N 13
+Samprit         1
+Sandipan Saha   3
+Sanjeev Kumar   23
+Sanjeevan       0
+Saurabh Shukla  4
+Shiva Srivastava        7
+Shivan K        22
+Shivan_S        1
+Shivananda Sonwane      28
+Shubham Sharma  21
+Sowmiya Sivakumar       9
+Spuri   0
+Sudhanshu Kumar 2
+Suraj S Bilgi   2
+Swati   17
+Tarun   1
+Uday Mishra     0
+Vasanth P       0
+Vivek   5
+Wasim   16
+Zeeshan         16
+Time taken: 1.781 seconds, Fetched: 70 row(s)
 =======================================================================================================================================================================
 6. Total query that each agent have taken 
+hive> SELECT Agent,SUM(Chats) AS total_queries_takens FROM agent_performance GROUP BY Agent;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221192120_8476610e-b5ee-4bd0-a0d9-0973d68102f9
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:21:22,003 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local818811011_0010
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 7504498 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent   total_queries_takens
+Abhishek        0
+Aditya  0
+Aditya Shinde   277
+Aditya_iot      231
+Amersh  0
+Ameya Jain      322
+Anirudh         81
+Ankit Sharma    0
+Ankitjha        5
+Anurag Tiwari   4
+Aravind         366
+Ashad Nasim     18
+Ashish  0
+Ayushi Mishra   514
+Bharath         369
+Boktiar Ahmed Bappy     452
+Chaitra K Hiremath      64
+Deepranjan Gupta        493
+Dibyanshu       1
+Harikrishnan Shaji      381
+Hitesh Choudhary        1
+Hrisikesh Neogi 578
+Hyder Abbas     0
+Ineuron Intelligence    0
+Ishawant Kumar  338
+Jawala Prakash  439
+Jayant Kumar    127
+Jaydeep Dixit   512
+Khushboo Priya  446
+Madhulika G     469
+Mahak   7
+Mahesh Sarade   364
+Maitry  542
+Maneesh         4
+Manjunatha A    413
+Mithun S        503
+Mukesh  19
+Mukesh Rao      5
+Muskan Garg     56
+Nandani Gupta   560
+Nishtha Jain    373
+Nitin M 0
+Prabir Kumar Satapathy  299
+Prateek _iot    190
+Prerna Singh    401
+Rishav Dash     409
+Rohan   0
+Saif Khan       0
+Saikumarreddy N 364
+Samprit         1
+Sandipan Saha   30
+Sanjeev Kumar   507
+Sanjeevan       0
+Saurabh Shukla  16
+Shiva Srivastava        53
+Shivan K        357
+Shivan_S        7
+Shivananda Sonwane      441
+Shubham Sharma  510
+Sowmiya Sivakumar       206
+Spuri   0
+Sudhanshu Kumar 2
+Suraj S Bilgi   28
+Swati   524
+Tarun   22
+Uday Mishra     0
+Vasanth P       0
+Vivek   44
+Wasim   433
+Zeeshan         542
+Time taken: 1.794 seconds, Fetched: 70 row(s)
 =======================================================================================================================================================================
 7. Total Feedback that each agent have received 
+hive> SELECT Agent,SUM(feedbacks) AS total_feedbacks_recieved FROM agent_performance GROUP BY Agent;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221192233_d1bf8bba-70f8-4c66-8b74-135121d969cf
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:22:35,266 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1628832648_0011
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 7724204 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent   total_feedbacks_recieved
+Abhishek        0
+Aditya  0
+Aditya Shinde   153
+Aditya_iot      131
+Amersh  0
+Ameya Jain      228
+Anirudh         39
+Ankit Sharma    0
+Ankitjha        3
+Anurag Tiwari   3
+Aravind         233
+Ashad Nasim     9
+Ashish  0
+Ayushi Mishra   329
+Bharath         247
+Boktiar Ahmed Bappy     311
+Chaitra K Hiremath      37
+Deepranjan Gupta        312
+Dibyanshu       0
+Harikrishnan Shaji      231
+Hitesh Choudhary        0
+Hrisikesh Neogi 367
+Hyder Abbas     0
+Ineuron Intelligence    0
+Ishawant Kumar  202
+Jawala Prakash  250
+Jayant Kumar    70
+Jaydeep Dixit   305
+Khushboo Priya  289
+Madhulika G     281
+Mahak   5
+Mahesh Sarade   216
+Maitry  347
+Maneesh         3
+Manjunatha A    254
+Mithun S        364
+Mukesh  17
+Mukesh Rao      5
+Muskan Garg     37
+Nandani Gupta   308
+Nishtha Jain    257
+Nitin M 0
+Prabir Kumar Satapathy  222
+Prateek _iot    107
+Prerna Singh    235
+Rishav Dash     264
+Rohan   0
+Saif Khan       0
+Saikumarreddy N 290
+Samprit         0
+Sandipan Saha   18
+Sanjeev Kumar   311
+Sanjeevan       0
+Saurabh Shukla  8
+Shiva Srivastava        46
+Shivan K        243
+Shivan_S        4
+Shivananda Sonwane      263
+Shubham Sharma  300
+Sowmiya Sivakumar       141
+Spuri   0
+Sudhanshu Kumar 2
+Suraj S Bilgi   15
+Swati   302
+Tarun   6
+Uday Mishra     0
+Vasanth P       0
+Vivek   20
+Wasim   284
+Zeeshan         335
+Time taken: 2.011 seconds, Fetched: 70 row(s)
 =======================================================================================================================================================================
 8. Agent name who have average rating between 3.5 to 4 
+
+hive> 
+    > 
+    > 
+    > WITH CTE AS(SELECT Agent,AVG(avg_rating) AS agent_avg_rating  FROM agent_performance GROUP BY Agent)
+    > SELECT Agent FROM CTE WHERE agent_avg_rating >= 3.5 AND agent_avg_rating<=4;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221192408_7062740a-7258-4866-a654-4f019ffbd628
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:24:10,193 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1215082234_0012
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 7943910 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent
+Boktiar Ahmed Bappy
+Ishawant Kumar
+Khushboo Priya
+Madhulika G
+Manjunatha A
+Time taken: 1.874 seconds, Fetched: 5 row(s)
+
 =======================================================================================================================================================================
 9. Agent name who have rating less than 3.5 
+
+hive> WITH CTE AS(SELECT Agent,AVG(avg_rating) AS agent_avg_rating  FROM agent_performance GROUP BY Agent)
+    > SELECT Agent FROM CTE WHERE agent_avg_rating<3.5;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221192453_8feba97e-fcfd-4ff7-b920-40a7de1b09bb
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:24:55,503 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local774407849_0014
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 8383322 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent
+Abhishek 
+Aditya 
+Aditya Shinde
+Aditya_iot 
+Amersh 
+Ameya Jain
+Anirudh 
+Ankit Sharma
+Ankitjha 
+Anurag Tiwari
+Aravind 
+Ashad Nasim
+Ashish 
+Ayushi Mishra
+Bharath 
+Chaitra K Hiremath
+Deepranjan Gupta
+Dibyanshu 
+Harikrishnan Shaji
+Hitesh Choudhary
+Hrisikesh Neogi
+Hyder Abbas
+Ineuron Intelligence 
+Jawala Prakash
+Jayant Kumar
+Jaydeep Dixit
+Mahak 
+Mahesh Sarade
+Maitry 
+Maneesh 
+Mithun S
+Mukesh 
+Mukesh Rao 
+Muskan Garg
+Nandani Gupta
+Nishtha Jain
+Nitin M
+Prabir Kumar Satapathy
+Prateek _iot 
+Prerna Singh
+Rishav Dash
+Rohan 
+Saif Khan
+Saikumarreddy N
+Samprit 
+Sandipan Saha
+Sanjeev Kumar
+Sanjeevan 
+Saurabh Shukla
+Shiva Srivastava
+Shivan K
+Shivan_S 
+Shubham Sharma
+Sowmiya Sivakumar
+Spuri 
+Sudhanshu Kumar
+Suraj S Bilgi
+Swati 
+Tarun 
+Uday Mishra
+Vasanth P
+Vivek 
+Wasim 
+Zeeshan 
+Time taken: 2.028 seconds, Fetched: 64 row(s)
 =======================================================================================================================================================================
 10. Agent name who have rating more than 4.5 
+
+Time taken: 2.028 seconds, Fetched: 64 row(s)
+hive> WITH CTE AS(SELECT Agent,AVG(avg_rating) AS agent_avg_rating  FROM agent_performance GROUP BY Agent)
+    > SELECT Agent FROM CTE WHERE agent_avg_rating>4.5;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221192524_a919286f-7b66-4515-b4fe-3f7abd56f9de
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:25:26,169 Stage-1 map = 0%,  reduce = 0%
+2023-02-21 19:25:27,182 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1040378258_0015
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 8603028 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent
+Time taken: 3.055 seconds
 =======================================================================================================================================================================
 11. How many feedback agents have received more than 4.5 average
+hive> WITH CTE AS(SELECT Agent,AVG(avg_rating) AS agent_avg_rating  FROM agent_performance GROUP BY Agent)
+    > SELECT COUNT(Agent) AS Agents FROM CTE WHERE agent_avg_rating>4.5;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221192624_2265f31f-9b42-4fdb-ae07-d01bc9ac6cf1
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:26:26,654 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local814625454_0018
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:26:28,110 Stage-2 map = 100%,  reduce = 100%
+Ended Job = job_local517483137_0019
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 9042440 HDFS Write: 0 SUCCESS
+Stage-Stage-2:  HDFS Read: 9042440 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agents
+0
+Time taken: 3.36 seconds, Fetched: 1 row(s)
+
 =======================================================================================================================================================================
 12. average weekly response time for each agent 
+
+
 =======================================================================================================================================================================
 13. average weekly resolution time for each agents 
 =======================================================================================================================================================================
 14. Find the number of chat on which they have received a feedback 
+hive> SELECT Agent,SUM(Chats-feedbacks) AS Chat_with_feedbacks FROM agent_performance GROUP BY Agent;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230221193158_ac292cb7-5020-4b69-92dd-35a71f4c79d0
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-21 19:31:59,921 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1785488409_0020
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 9701558 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent   chat_with_feedbacks
+Abhishek        0
+Aditya  0
+Aditya Shinde   124
+Aditya_iot      100
+Amersh  0
+Ameya Jain      94
+Anirudh         42
+Ankit Sharma    0
+Ankitjha        2
+Anurag Tiwari   1
+Aravind         133
+Ashad Nasim     9
+Ashish  0
+Ayushi Mishra   185
+Bharath         122
+Boktiar Ahmed Bappy     141
+Chaitra K Hiremath      27
+Deepranjan Gupta        181
+Dibyanshu       1
+Harikrishnan Shaji      150
+Hitesh Choudhary        1
+Hrisikesh Neogi 211
+Hyder Abbas     0
+Ineuron Intelligence    0
+Ishawant Kumar  136
+Jawala Prakash  189
+Jayant Kumar    57
+Jaydeep Dixit   207
+Khushboo Priya  157
+Madhulika G     188
+Mahak   2
+Mahesh Sarade   148
+Maitry  195
+Maneesh         1
+Manjunatha A    159
+Mithun S        139
+Mukesh  2
+Mukesh Rao      0
+Muskan Garg     19
+Nandani Gupta   252
+Nishtha Jain    116
+Nitin M 0
+Prabir Kumar Satapathy  77
+Prateek _iot    83
+Prerna Singh    166
+Rishav Dash     145
+Rohan   0
+Saif Khan       0
+Saikumarreddy N 74
+Samprit         1
+Sandipan Saha   12
+Sanjeev Kumar   196
+Sanjeevan       0
+Saurabh Shukla  8
+Shiva Srivastava        7
+Shivan K        114
+Shivan_S        3
+Shivananda Sonwane      178
+Shubham Sharma  210
+Sowmiya Sivakumar       65
+Spuri   0
+Sudhanshu Kumar 0
+Suraj S Bilgi   13
+Swati   222
+Tarun   16
+Uday Mishra     0
+Vasanth P       0
+Vivek   24
+Wasim   149
+Zeeshan         207
+Time taken: 1.827 seconds, Fetched: 70 row(s)
+
 =======================================================================================================================================================================
 15. Total contribution hour for each and every agents weekly basis 
+
 =======================================================================================================================================================================
 16. Perform inner join, left join and right join based on the agent column and after joining the table export that data into your local system.
 =======================================================================================================================================================================
