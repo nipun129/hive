@@ -690,9 +690,154 @@ Time taken: 3.36 seconds, Fetched: 1 row(s)
 =======================================================================================================================================================================
 12. average weekly response time for each agent 
 
+Create a table to format timestamps to calcuate average time
+CREATE TABLE agent_performance_time AS SELECT S_no, FROM_UNIXTIME(UNIX_TIMESTAMP(CONCAT(Day,' ',response_time),'MM/dd/yyyy HH:mm:ss'),'yyyy-MM-dd HH:mm:ss') AS DAY, Agent, Chats,
+response_time, res_time, avg_rating, feedbacks FROM agent_performance;
 
+hive> WITH CTE AS (SELECT Agent,WEEKOFYEAR(DAY),ROUND(AVG(SECOND(DAY)),2) AS weekly_avg FROM agent_performance_time GROUP BY Agent,WEEKOFYEAR(DAY))
+    > SELECT Agent, weekly_avg FROM CTE;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230222191537_aaa268d9-e661-4f4f-b03d-d8b9e0157c8f
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-22 19:15:39,618 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1417151579_0009
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 3588874 HDFS Write: 908838 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent   weekly_avg
+Abhishek        0.0
+Abhishek        0.0
+Abhishek        0.0
+Abhishek        0.0
+Abhishek        0.0
+Aditya  0.0
+Aditya  0.0
+Aditya  0.0
+Aditya  0.0
+Aditya  0.0
+Aditya Shinde   15.33
+Aditya Shinde   13.0
+Aditya Shinde   22.14
+Aditya Shinde   0.0
+Aditya Shinde   0.0
+Aditya_iot      0.0
+Aditya_iot      11.57
+Aditya_iot      17.71
+Aditya_iot      30.14
+Aditya_iot      40.5
+Amersh  0.0
+Amersh  0.0
+Amersh  0.0
+Amersh  0.0
+Amersh  0.0
+Ameya Jain      0.0
+Ameya Jain      0.0
+Ameya Jain      15.43
+Ameya Jain      29.71
+Ameya Jain      23.0
+Anirudh         0.0
+Anirudh         8.86
+Anirudh         7.29
+Anirudh         0.0
+Anirudh         0.0
+Ankit Sharma    0.0
+Ankit Sharma    0.0
+Ankit Sharma    0.0
+Ankit Sharma    0.0
+Ankit Sharma    0.0
+Ankitjha        0.0
+Ankitjha        0.0
+Ankitjha        0.0
+Ankitjha        0.0
+Ankitjha        2.17
+Anurag Tiwari   0.0
+Anurag Tiwari   1.86
+Anurag Tiwari   0.0
+Anurag Tiwari   0.0
+Anurag Tiwari   0.0
+Aravind         0.0
+Aravind         21.0
+Aravind         25.57
+Aravind         27.86
+Aravind         0.0
+Ashad Nasim     0.0
+Ashad Nasim     11.29
+Ashad Nasim     0.0
+Ashad Nasim     0.0
+Ashad Nasim     0.0
+Ashish  0.0
+Ashish  0.0
+Ashish  0.0
+Ashish  0.0
+Ashish  0.0
+Ayushi Mishra   17.0
+Ayushi Mishra   24.43
+Ayushi Mishra   22.57
+Ayushi Mishra   25.29
+Ayushi Mishra   18.83
+Bharath         8.0
+Bharath         24.29
+Bharath         14.0
+Bharath         19.29
+Bharath         22.83
 =======================================================================================================================================================================
 13. average weekly resolution time for each agents 
+
+Create a table to format timestamps to calcuate average time
+CREATE TABLE agent_performance_resolve AS SELECT S_no, FROM_UNIXTIME(UNIX_TIMESTAMP(CONCAT(Day,' ',res_time),'MM/dd/yyyy HH:mm:ss'),'yyyy-MM-dd HH:mm:ss') AS DAY, Agent, Chats,
+response_time, res_time, avg_rating, feedbacks FROM agent_performance;
+
+hive> WITH CTE AS(SELECT Agent,WEEKOFYEAR(DAY),ROUND(AVG(SECOND(DAY)),2) AS weekly_avg FROM agent_performance_time GROUP BY Agent,WEEKOFYEAR(DAY))
+    > SELECT Agent, weekly_avg FROM CTE;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+Query ID = root_20230222191901_8ec139ca-3172-4dd0-bdbf-abdc211cd198
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Job running in-process (local Hadoop)
+2023-02-22 19:19:02,896 Stage-1 map = 100%,  reduce = 100%
+Ended Job = job_local1514300683_0012
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 4329334 HDFS Write: 1165214 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+agent   weekly_avg
+Abhishek        0.0
+Abhishek        0.0
+Abhishek        0.0
+Abhishek        0.0
+Abhishek        0.0
+Aditya  0.0
+Aditya  0.0
+Aditya  0.0
+Aditya  0.0
+Aditya  0.0
+Aditya Shinde   15.33
+Aditya Shinde   13.0
+Aditya Shinde   22.14
+Aditya Shinde   0.0
+Aditya Shinde   0.0
+Aditya_iot      0.0
+Aditya_iot      11.57
+Aditya_iot      17.71
+Aditya_iot      30.14
+Aditya_iot      40.5
 =======================================================================================================================================================================
 14. Find the number of chat on which they have received a feedback 
 hive> SELECT Agent,SUM(Chats-feedbacks) AS Chat_with_feedbacks FROM agent_performance GROUP BY Agent;
