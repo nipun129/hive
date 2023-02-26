@@ -934,8 +934,64 @@ Time taken: 1.827 seconds, Fetched: 70 row(s)
 
 =======================================================================================================================================================================
 15. Total contribution hour for each and every agents weekly basis 
+Create a temporary table from agent_login_report table
+
+CREATE TABLE agent_login_duration AS SELECT S_no, Agent, FROM_UNIXTIME(UNIX_TIMESTAMP(CONCAT(Day,' ',Duration),'dd-MMM-yy HH:mm:ss'),'yyyy-MM-dd HH:mm:ss') AS Duration
+FROM agent_login_report;
+
+WITH CTE AS (SELECT agent, ROUND((hour(duration) + (minute(duration)/60) + (second(duration)/3600)),2) AS times, 
+CASE WHEN extract(DAY FROM duration) >=1 AND extract(DAY FROM duration) < 7 THEN 1
+WHEN extract(DAY FROM duration) >=7 AND extract(DAY FROM duration) < 14 THEN 2
+WHEN extract(DAY FROM duration) >=14 AND extract(DAY FROM duration) < 21 THEN 3
+ELSE 4 END AS week
+FROM agent_login_duration) SELECT agent,week,SUM(times) FROM CTE GROUP BY agent,week;
 
 =======================================================================================================================================================================
 16. Perform inner join, left join and right join based on the agent column and after joining the table export that data into your local system.
+
+INNER JOIN
+=========
+hive> INSERT OVERWRITE LOCAL DIRECTORY '/tmp/inner_join.csv'
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > SELECT AL.*,AP.*
+    > FROM agent_login_report AL
+    > INNER JOIN agent_performance AP ON AL.agent = AP.agent;
+ 
+LEFT JOIN
+=========
+INSERT OVERWRITE LOCAL DIRECTORY '/tmp/left_join.csv'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+SELECT AL.*,AP.*
+FROM agent_login_report AL
+LEFT JOIN agent_performance AP ON AL.agent = AP.agent;
+ 
+RIGHT JOIN
+=========
+INSERT OVERWRITE LOCAL DIRECTORY '/tmp/right_join.csv'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+SELECT AL.*,AP.*
+FROM agent_login_report AL
+LEFT JOIN agent_performance AP ON AL.agent = AP.agent;
+
+Now the files are available in HDFS, we can use docker cp command to copy them to our local system
+# hadoop fs -ls /tmp
+Found 5 items
+drwxrwxr-x   - root supergroup          0 2023-02-18 21:59 /tmp/air_ooutput.csv
+drwx-wx-wx   - root supergroup          0 2023-02-18 19:00 /tmp/hive
+drwxrwxr-x   - root supergroup          0 2023-02-26 19:39 /tmp/inner_join.csv
+drwxrwxr-x   - root supergroup          0 2023-02-26 19:41 /tmp/left_join.csv
+drwxrwxr-x   - root supergroup          0 2023-02-26 19:42 /tmp/right_join.csv
 =======================================================================================================================================================================
 17. Perform partitioning on top of the agent column and then on top of that perform bucketing for each partitioning.
+
+hive> CREATE TABLE agent_performance_part (S_no INT, Day Date, Chats INT, response_time STRING, res_time STRING, avg_rating DECIMAL, feedbacks INT) 
+    > PARTITIONED BY (Agent STRING);
+OK
+Time taken: 0.277 seconds
+
+hive> insert overwrite table agent_performance_part PARTITION(Agent) SELECT * FROM agent_performance_csv;
+
+
