@@ -1,7 +1,8 @@
 Objective - The assignment is meant for you to apply learnings of the module on Hive on a real-life dataset. One of the major objectives of this assignment is gaining
 familiarity with how an analysis works in Hive and how you can gain insights from large datasets.
  
-Problem Statement - New York City is a thriving metropolis and just like most other cities of similar size, one of the biggest problems its residents face is parking. The classic combination of a huge number of cars and a cramped geography is the exact recipe that leads to a large number of parking tickets.
+Problem Statement - New York City is a thriving metropolis and just like most other cities of similar size, one of the biggest problems its residents face is parking.
+The classic combination of a huge number of cars and a cramped geography is the exact recipe that leads to a large number of parking tickets.
  
 In an attempt to scientifically analyse this phenomenon, the NYC Police Department regularly collects data related to parking tickets. This data is made available by NYC Open Data portal. We will try and perform some analysis on this data.
 
@@ -13,7 +14,41 @@ The analysis can be divided into two parts:
  
 Part-I: Examine the data
 
+Create Hive Table 
+==================================================================================================================================================================
+hive> CREATE TABLE parking_nyc (SummonsNumber INT, Plate_ID STRING, Reg_State STRING, Plate_Type STRING, Issue_Date STRING, Violation_Code INT, Vehicle_Body_Type STRING, Vehicle_Make STRING,
+    > Issuing_Agency STRING, StreetCode1 INT, StreetCode2 INT, StreetCode3 INT, Vehicle_Expiration_Date STRING, Violation_Loc STRING, Violation_Precinct INT, Issuer_Precinct INT,
+    > Issuer_Code INT, Issuer_Command STRING, Issuer_Squad STRING, Violation_Time STRING, Time_First_Observed STRING, Violation_County STRING, Violation_Front_Or_Opposite STRING,
+    > House_Number STRING, Street_Name STRING, Intersecting_Street STRING, Date_First_Observed STRING, Law_Section INT, Sub_Division STRING, Violation_Legal_Code STRING, Days_Parking_Effect STRING,
+    > From_Hours STRING, To_Hours STRING, Vehicle_Color STRING, Unregistered_Vehicle STRING, Vehicle_Year INT, Meter_Number STRING, Feet_From_Curb INT, Violation_Post_Code STRING,
+    > Violation_Description STRING, NoStand_Stop_Violation STRING, Hydrant_Violation STRING, Double_Parking_Violation STRING)
+    > ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' tblproperties ("skip.header.line.count" = "1");
+OK
+Time taken: 3.497 seconds
+hive>
+==================================================================================================================================================================
+Load Data into table
+hive>
+    >
+    > LOAD DATA INPATH '/parking/Parking2017.csv' INTO TABLE parking_nyc;
+Loading data to table default.parking_nyc
+OK
+Time taken: 3.236 seconds
+==================================================================================================================================================================
+Load date formate for issuing date of ticket in another table
+hive>
+    >
+    >
+    > CREATE TABLE parking_table AS SELECT SummonsNumber, Plate_ID, Reg_State, Plate_Type, FROM_UNIXTIME(UNIX_TIMESTAMP(Issue_Date,'dd/MM/yyyy'),'yyyy-MM-dd') AS Issue_Date,
+    > Violation_Code, Vehicle_Body_Type, Vehicle_Make, Issuing_Agency, StreetCode1, StreetCode2, StreetCode3, Vehicle_Expiration_Date, Violation_Loc, Violation_Precinct, Issuer_Precinct,
+    > Issuer_Code, Issuer_Command, Issuer_Squad, Violation_Time, Time_First_Observed, Violation_County, Violation_Front_Or_Opposite,
+    > House_Number, Street_Name, Intersecting_Street, Date_First_Observed, Law_Section, Sub_Division, Violation_Legal_Code, Days_Parking_Effect,
+    > From_Hours, To_Hours, Vehicle_Color, Unregistered_Vehicle, Vehicle_Year, Meter_Number, Feet_From_Curb, Violation_Post_Code ,
+    > Violation_Description, NoStand_Stop_Violation, Hydrant_Violation, Double_Parking_Violation FROM parking_nyc;
+==================================================================================================================================================================
 1.) Find the total number of tickets for the year.
+
+
 2.) Find out how many unique states the cars which got parking tickets came from.
 3.) Some parking tickets don’t have addresses on them, which is cause for concern. Find out how many such tickets there are(i.e. tickets where either "Street Code 1" or "Street Code 2" or "Street Code 3" is empty )
 
